@@ -26,8 +26,6 @@ export default class Board extends Component {
     render () {
         const { cell_vals, game_type, game_stat, game_play, next_turn_ply, onClickCell, onEndGame, winningCells } = this.props;
 
-        console.log('winningCells', winningCells);
-
         const cell_cont = (c) => (<div>
             {cell_vals && cell_vals[c] == 'x' && <i className="fa fa-times fa-5x"></i>}
             {cell_vals && cell_vals[c] == 'o' && <i className="fa fa-circle-o fa-5x"></i>}
