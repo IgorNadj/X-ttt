@@ -24,7 +24,7 @@ export default class Board extends Component {
     }
 
     render () {
-        const { cell_vals, game_type, game_stat, game_play, next_turn_ply, onClickCell, onEndGame, winningCells } = this.props;
+        const { cell_vals, game_type, game_stat, game_play, next_turn_ply, onClickCell, onEndGame, onNewGame, winningCells, wins, losses, draws, gameEnded } = this.props;
 
         const cell_cont = (c) => (<div>
             {cell_vals && cell_vals[c] == 'x' && <i className="fa fa-times fa-5x"></i>}
@@ -65,7 +65,14 @@ export default class Board extends Component {
                     </table>
                 </div>
 
+                <div>
+                    <div>Wins: {wins}</div>
+                    <div>Losses: {losses}</div>
+                    <div>Draws: {draws}</div>
+                </div>
+
                 <button type='submit' onClick={() => onEndGame()} className='button'><span>End Game <span className='fa fa-caret-right'></span></span></button>
+                {gameEnded && <button type='submit' onClick={() => onNewGame()} className='button'><span>Play again <span className='fa fa-caret-right'></span></span></button>}
 
             </div>
         );

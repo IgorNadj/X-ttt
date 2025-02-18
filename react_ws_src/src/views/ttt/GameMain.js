@@ -25,6 +25,10 @@ export default class SetName extends Component {
 				next_turn_ply: true,
 				game_play: true,
 				game_stat: 'Start game',
+				wins: 0,
+				losses: 0,
+				draws: 0,
+				startedFirstLastTime: true,
 			}
 		else {
 			this.sock_start()
@@ -34,10 +38,15 @@ export default class SetName extends Component {
 				next_turn_ply: true,
 				game_play: false,
 				game_stat: 'Connecting',
+				wins: 0,
+				losses: 0,
+				draws: 0,
+				startedFirstLastTime: null,
 			}
 		}
 	}
 
+	
 
 	sock_start () {
 
@@ -53,16 +62,23 @@ export default class SetName extends Component {
 		this.socket.on('pair_players', function(data) { 
 			// console.log('paired with ', data)
 
+			const iStart = data.mode=='m';
+
 			this.setState({
-				next_turn_ply: data.mode=='m',
+				next_turn_ply: iStart,
 				game_play: true,
-				game_stat: 'Playing with ' + data.opp.name
+				game_stat: 'Playing with ' + data.opp.name,
+				startedFirstLastTime: iStart
 			})
 
 		}.bind(this));
 
 
 		this.socket.on('opp_turn', this.turn_opp_live.bind(this));
+
+		this.socket.on('new_game', () => {
+			this.reset_for_new_game();
+		});
 
 
 
@@ -74,10 +90,11 @@ export default class SetName extends Component {
 
 
 	render () {
-		const { cell_vals_presentational, game_type, game_stat, game_play, next_turn_ply } = this.state;
-		const { winningCells } = gameLogic;
+		const { cell_vals_presentational, game_type, game_stat, game_play, next_turn_ply, wins, losses, draws } = this.state;
+		const { winningCells, game_won, game_drawn } = gameLogic;
+		//  console.log('u', winningCells, game_won, game_drawn)
 
-		// console.log(cell_vals_presentational)
+		// console.log(this.state)
 
 		return (
 			<Board 
@@ -88,7 +105,13 @@ export default class SetName extends Component {
 				next_turn_ply={next_turn_ply} 
 				onClickCell={this.click_cell.bind(this)} 
 				onEndGame={this.end_game.bind(this)}
-				winningCells={winningCells} />
+				onNewGame={this.new_game.bind(this)}
+				winningCells={winningCells} 
+				wins={wins}
+				losses={losses}
+				draws={draws}
+				gameEnded={game_won || game_drawn}
+				/>
 		)
 	}
 
@@ -117,12 +140,14 @@ export default class SetName extends Component {
 			this.setState({
 				game_stat: 'You win',
 				game_play: false,
+				wins: this.state.wins + 1,
 			});
 		}
 		if (gameLogic.game_drawn) {
 			this.setState({
 				game_stat: 'Draw',
-				game_play: false
+				game_play: false,
+				draws: this.state.draws + 1,
 			});
 		}
 	}
@@ -136,12 +161,14 @@ export default class SetName extends Component {
 			this.setState({
 				game_stat: 'Opponent win',
 				game_play: false,
+				losses: this.state.losses + 1,
 			});
 		}
 		if (gameLogic.game_drawn) {
 			this.setState({
 				game_stat: 'Draw',
-				game_play: false
+				game_play: false,
+				draws: this.state.draws + 1,
 			});
 		}
 	}
@@ -156,12 +183,14 @@ export default class SetName extends Component {
 			this.setState({
 				game_stat: 'Opponent win',
 				game_play: false,
+				losses: this.state.losses + 1,
 			});
 		}
 		if (gameLogic.game_drawn) {
 			this.setState({
 				game_stat: 'Draw',
-				game_play: false
+				game_play: false,
+				draws: this.state.draws + 1,
 			});
 		}
 	}
@@ -170,6 +199,42 @@ export default class SetName extends Component {
 		this.socket && this.socket.disconnect();
 
 		this.props.onEndGame()
+	}
+
+	new_game () {
+		this.reset_for_new_game();
+		if (this.props.game_type == 'live') {
+			this.socket.emit('new_game');
+		}
+		
+	}
+
+	reset_for_new_game () {
+		gameLogic.reset();
+
+		let iStart = !this.state.startedFirstLastTime;
+
+		if (this.props.game_type != 'live')
+			this.setState({
+				cell_vals_presentational: {},
+				next_turn_ply: iStart,
+				game_play: true,
+				game_stat: 'Start game',
+				startedFirstLastTime: iStart,
+			});
+
+			if (!iStart && this.props.game_type != 'live') {
+				setTimeout(this.turn_comp.bind(this), rand_to_fro(500, 1000));
+			}
+		else {
+			this.setState({
+				cell_vals_presentational: {},
+				next_turn_ply: iStart,
+				game_play: true,
+				game_stat: 'Start game',
+				startedFirstLastTime: iStart,
+			});
+		}
 	}
 
 

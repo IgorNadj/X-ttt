@@ -34,8 +34,8 @@ export default class GameLogic {
 	 * @param {'x' | 'o'} type 
 	 */
 	turn(cell_id, type) {
-		if (this.game_won || this.game_drawn) throw new Error('Game already finished');
-		if (this.cell_vals[cell_id]) throw new Error('Spot taken');
+		if (this.game_won || this.game_drawn) return;//throw new Error('Game already finished');
+		if (this.cell_vals[cell_id]) return;//throw new Error('Spot taken');
 
 		this.changeCell(cell_id, type);
 
@@ -47,7 +47,7 @@ export default class GameLogic {
 	 * @param {'x' | 'o'} type 
 	 */
 	turn_comp(type) {
-		if (this.game_won || this.game_drawn) throw new Error('Game already finished');
+		if (this.game_won || this.game_drawn) return; //throw new Error('Game already finished');
 
 		let empty_cells_arr = []
 		for (let i = 1; i <= 9; i++)

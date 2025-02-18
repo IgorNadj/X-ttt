@@ -69,6 +69,13 @@ function onTurn(data) {
 	// updAdmin("Q answer - game - qgid:"+data.qgid + "  --  usr:"+this.player.mode + " - uid:"+this.player.uid + "  --  qnum:"+data.qnum + "  --  ans:"+data.ansnum);
 };
 
+
+function onNewGame() {
+	io.to(this.player.opp.sockid).emit("new_game");
+
+	util.log("new game  --  usr:"+this.player.mode + " - :"+this.player.name);
+};
+
 // ----	--------------------------------------------	--------------------------------------------	
 // ----	--------------------------------------------	--------------------------------------------	
 
@@ -105,6 +112,8 @@ set_game_sock_handlers = function (socket) {
 	socket.on("new player", onNewPlayer);
 
 	socket.on("ply_turn", onTurn);
+
+	socket.on("new_game", onNewGame);
 
 	socket.on("disconnect", onClientDisconnect);
 
