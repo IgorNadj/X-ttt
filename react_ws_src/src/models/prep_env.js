@@ -16,7 +16,7 @@ const prep_env = function (ca) {
 // ---- --------------------------------------------  --------------------------------------------  
 
 	function load_conf () {
-	    // console.log("conf_file", conf_file)
+	    console.log("conf_file", conf_file)
 
 		superagent
 			.get(conf_file)
@@ -32,7 +32,7 @@ const prep_env = function (ca) {
 				const conf_json = x2js.xml2js(res.text)
 
 				app.settings.ws_conf = conf_json.data
-				// console.log('loaded site configuration', app.settings.ws_conf)
+				console.log('loaded site configuration', app.settings.ws_conf)
 				console.log('loaded site configuration', app.settings.ws_conf.site.vals.year)
 
 				prep_site ()

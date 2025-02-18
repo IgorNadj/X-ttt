@@ -57,7 +57,7 @@ export default class SetName extends Component {
 
 	sock_start () {
 
-		this.socket = io(app.settings.ws_conf.loc.SOCKET__io.u);
+		this.socket = io('http://localhost:3001');
 
 		this.socket.on('connect', function(data) { 
 			// console.log('socket connected', data)
